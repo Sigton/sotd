@@ -29,11 +29,14 @@ async def on_message(message):
     if message.content.startswith("m0add"):
         args = message.content.split(" ")[1:]
 
+        with open("post_log.json", "r") as f:
+            post_logs = json.load(f)
+        
         if not len(args):
             await client.send_message(message.channel, "You think you're smart tryna trick me. Put a song in next time.")
             return
 
-        if not args[0][0:32] == "https://www.youtube.com/watch?v=":
+        if (not args[0][0:32] == "https://www.youtube.com/watch?v=") and (not args[0][0:17] == "https://youtu.be/"):
             await client.send_message(message.channel, "That ain't a youtube video. Try again.")
             return
 
@@ -51,6 +54,9 @@ async def on_message(message):
                 return
 
         username = message.author.nick
+        if username is None:
+            username = message.author.name
+            
         song_channel = [channel for channel in message.server.channels if "song" in channel.name][0]
         
         await client.send_message(song_channel, """Song of the Day {} ({})
@@ -64,6 +70,10 @@ async def on_message(message):
 
     # m0ban
     if message.content.startswith("m0ban"):
+
+        with open("post_log.json", "r") as f:
+            post_logs = json.load(f)
+        
         args = message.content.split(" ")[1:]
 
         if "Admins" not in [role.name for role in message.author.roles]:
@@ -74,7 +84,7 @@ async def on_message(message):
             await client.send_message(message.channel, "You need to tell me which song to ban, im not psychic!")
             return
 
-        if not args[0][0:32] == "https://www.youtube.com/watch?v=":
+        if (not args[0][0:32] == "https://www.youtube.com/watch?v=") and (not args[0][0:17] == "https://youtu.be/"):
             await client.send_message(message.channel, "That ain't a youtube video.")
             return
 
